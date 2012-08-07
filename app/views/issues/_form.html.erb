@@ -1,0 +1,96 @@
+<% if Software.any? then %>
+	<%= form_for @issue, :html => {:class => 'well form-horizontal'}  do |f| %>
+		<% if @issue.errors.any? then %>
+			<div class="alert alert-error">
+		  	<button class="close" data-dismiss="alert">×</button>			
+			  <strong><%= pluralize(@issue.errors.count, 'error') %> occured:</strong><br/><br/>
+				<ul>
+					<% @issue.errors.full_messages.each do |msg| %>
+					<li><%= msg %></li>
+					<% end %>
+				</ul>
+			</div>
+		<% end %>
+	
+	
+	  <div class="control-group">
+	    <%= f.label :title, :class => 'control-label mandatory' %>
+	    <div class="controls">
+	      <%= f.text_field :title, :class => 'text_field' %>
+	    </div>
+	  </div>
+	  <div class="control-group">
+	    <%= f.label :description, :class => 'control-label mandatory' %>
+	    <div class="controls">
+	      <%= f.text_area :description, :class => 'text_area' %>
+	    </div>
+	  </div>
+	  <div class="control-group">
+	    <%= f.label :type, :class => 'control-label' %>
+	    <div class="controls">
+	      <%= f.select(:type, options_for_select(Issue::TYPES)) %>
+	    </div>
+	  </div>
+		<% if logged_in? then %>
+	  <div class="control-group">
+			<%= f.label :user, 'Assign to', :class => 'control-label'%>
+	    <div class="controls">
+	      <%= f.collection_select(:user_id, User.all, :id, :name, :include_blank => true) %>
+	    </div>
+	  </div>
+		<% end %>
+	
+		<% unless @hide_software_field then %>
+	  <div class="control-group">
+	    <%= f.label :software_id, :class => 'control-label' %>
+	    <div class="controls">
+	      <%= f.collection_select(:software_id, Software.all, :id, :title, :selected => @issue.software_id) %>
+	    </div>
+	  </div>
+		<% else %>
+			<%= f.hidden_field(:software_id, :value => @issue.software_id)%>
+		<% end %>
+
+		<hr/>
+	
+		<div class="control-group">
+				<%= f.label :reporter_name, "Your name", :class => 'control-label'%>
+				<div class="controls">
+						<%= f.text_field :reporter_name, {:placeholder => "John Doe"} %>
+				</div>
+		</div>
+	
+		<div class="control-group">
+			<%= f.label :reporter_email, "Your email address", :class => 'control-label' %>		
+			<div class="controls">
+				<%= f.text_field :reporter_email, :placeholder => "j.doe@example.com" %>
+			</div>
+		</div>
+	
+		<% if !logged_in? then %>
+			<hr/>
+			<div class="control-group">
+				<label class='control-label'>Captcha</label>
+				<div class="controls">
+						<%= recaptcha_tags %>
+						<p>
+							As a last step, for us to be sure you're really human
+							please solve this captcha in order to report your issue.<br/>
+						</p>
+				</div>
+			</div>
+
+		<% end %>
+
+	  <div class="form-actions">
+	    <%= f.submit nil, :class => 'btn btn-primary' %>
+	    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+	                issues_path, :class => 'btn' %>
+	  </div>
+	<% end %>
+<% else %>
+	<div class="alert alert-error">
+	  <button class="close" data-dismiss="alert">×</button>
+	  <strong>No product</strong> There are no products to report bugs for. Please <%= link_to "create", new_software_path %> a new product, so users can report bugs for it
+	</div>
+<% end %>

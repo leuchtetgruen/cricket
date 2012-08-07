@@ -1,0 +1,86 @@
+<%- model_class = Issue -%>
+<% content_for :sidebar do %>
+	<form method="get" class="well">
+		<h3>Filter</h3>
+		<hr/>
+		<!-- <%= label :title, "Title" %>
+		<%= text_field_tag :title %> -->
+		<%= label :software, "Product" %>
+		<%= select_tag(:software, options_for_select(@softwares, currently_selected(:software)), :include_blank => true)%>
+		<%= label :type, "Type" %>
+		<%= select_tag(:type, options_for_select(Issue::TYPES, currently_selected(:type)), :include_blank => true) %>
+		<div class="control-group">
+		<%= label :user, "Assigned to" %>
+		<%= select_tag(:user, options_for_select(@users, currently_selected(:user)), :include_blank => true) %>
+		<%= check_box_tag(:unassigned, 'yes', (currently_selected?(:unassigned)))%> Unassigned
+		</div>
+		<%= label :resolved, "Status"%>
+		<%= select_tag(:status, options_for_select(["resolved", "unresolved"], currently_selected(:status)), :include_blank => true)%>
+		
+
+    <%= submit_tag "Filter", :class => 'btn btn-primary' %>
+		<%= link_to "Reset", issues_reset_filter_path, :class => 'btn btn-danger'%>
+
+
+	</form>
+<% end %>
+
+<div class="page-header">
+  <h1><%= @title %></h1>
+</div>
+<%= flash_messages %>
+
+<% unless @issues.empty? then %>
+	<table class="table table-striped">
+	  <thead>
+	    <tr>
+				<th>Id</th>
+	      <th><%= model_class.human_attribute_name(:title) %></th>
+	      <th><%= model_class.human_attribute_name(:type) %></th>
+	      <th>Assigned to</th>
+	      <th>Software</th>
+	      <th><%=t '.actions', :default => t("helpers.actions") if logged_in? %></th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <% @issues.each do |issue| %>
+	      <tr>
+					<td><%= link_to issue.id, issue_path(issue) %></td>
+	        <td <%= issue.resolved? ? "class='resolved'" : "class='unresolved'" %>><%= link_to issue.title, issue_path(issue) %></td>
+	        <td><%= issue.human_readable_type %></td>
+	        <td><%= issue.user or "not assigned" %></td>
+	        <td><%= issue.software %></td>
+					<% if logged_in? then %>
+	        <td>
+	          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+	                      edit_issue_path(issue), :class => 'btn btn-mini' %>
+	          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+	                      issue_path(issue),
+	                      :method => :delete,
+	                      :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+	                      :class => 'btn btn-mini btn-danger' %>
+	        </td>
+					<% end %>
+	      </tr>
+	    <% end %>
+	  </tbody>
+	</table>
+<% else %>
+	<div class="alert">
+	  <button class="close" data-dismiss="alert">×</button>
+	  <strong>No issues</strong> There are no issues matching your filters. You might want to narrow your filters in the left bar or<br/>
+		hit the reset button to remove all filters. You can also report a new issue.
+	</div>
+<% end %>
+
+<%= will_paginate(@issues, :renderer => BootstrapPaginationHelper::LinkRenderer) %>
+
+<% if @software then %>
+	<%= link_to "Report new issue",
+	            new_issue_path(:software => @software),
+	            :class => 'btn btn-primary' %>
+<% else %>
+<%= link_to "Report new issue",
+            new_issue_path,
+            :class => 'btn btn-primary' %>
+<% end %>

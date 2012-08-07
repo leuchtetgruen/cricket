@@ -1,0 +1,25 @@
+<div class="page-header">
+	<h1>Welcome</h1>
+</div>
+
+<%= flash_messages %>
+<% if User.authenticates?('admin', 'admin') %>
+	<div class="alert alert-danger">
+		<strong>Unsecure admin password</strong> <br/>
+		Welcome - Please login as user 'admin' with the same password. This message will appear until you change the standard admin password.
+	</div>
+<% end %>
+
+
+<%= form_tag do %>
+	<label>Username</label>
+	<%= text_field_tag :name, params[:name] %>
+	
+	<label>Password</label>
+	<%= password_field_tag :password, params[:password] %>
+	
+	<div>
+		<%= submit_tag "Login", :class => "btn btn-primary" %>
+	</div>
+
+<%  end %>
