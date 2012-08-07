@@ -4,41 +4,47 @@
 
 <%= flash_messages %>
 
-<%= form_for @user, :url => update_password_path, :method => :post, :html => {:class => 'well form-horizontal'} do |f| %>
-<fieldset>
-  <legend>Reset password</legend>
 
-  <div class="control-group">
-    <label class="control-label">Username</label>
-    <div class="controls">
-			<%= f.text_field :name, :disabled => true %>
-    </div>
-  </div>
+<% if @user.normal? then %>
+	<%= form_for @user, :url => update_password_path, :method => :post, :html => {:class => 'well form-horizontal'} do |f| %>
+	<fieldset>
+	  <legend>Reset password</legend>
 
+	  <div class="control-group">
+	    <label class="control-label">Username</label>
+	    <div class="controls">
+				<%= f.text_field :name, :disabled => true %>
+	    </div>
+	  </div>
+	  <div class="control-group">
+	    <label class="control-label" for="current_password">Current password</label>
+	    <div class="controls">
+				<%= f.password_field :current_password %>
+	    </div>
+	  </div>
 
-  <div class="control-group">
-    <label class="control-label" for="current_password">Current password</label>
-    <div class="controls">
-			<%= f.password_field :current_password %>
-    </div>
-  </div>
+		<div class="control-group">
+	    <label class="control-label" for="new_password">New password</label>
+	    <div class="controls">
+				<%= f.password_field :new_password %>
+	    </div>
+	  </div>
 
-	<div class="control-group">
-    <label class="control-label" for="new_password">New password</label>
-    <div class="controls">
-			<%= f.password_field :new_password %>
-    </div>
-  </div>
-
-	<div class="control-group">
-    <label class="control-label" for="new_password">New password (repeat)</label>
-    <div class="controls">
-			<%= f.password_field :new_password_repeat %>
-			<p>Please repeat your new password</p>
-    </div>
-  </div>
-</fieldset>
-<div class="form-actions">
-	<%= f.submit 'Reset password', :class => 'btn'%>
-</div>
+		<div class="control-group">
+	    <label class="control-label" for="new_password">New password (repeat)</label>
+	    <div class="controls">
+				<%= f.password_field :new_password_repeat %>
+				<p>Please repeat your new password</p>
+	    </div>
+	  </div>
+	</fieldset>
+	<div class="form-actions">
+		<%= f.submit 'Reset password', :class => 'btn'%>
+	</div>
+	<% end %>
+<% else %>
+	<div class="alert">
+	  <button class="close" data-dismiss="alert">×</button>
+	  <strong>LDAP User</strong> Your user account is imported from a LDAP directory. It can only be changed on the ldap server itself and not here.
+	</div>
 <% end %>

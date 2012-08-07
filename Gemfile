@@ -26,6 +26,7 @@ gem 'jquery-rails'
 gem "recaptcha", :require => "recaptcha/rails"
 gem 'will_paginate', '~> 3.0'
 gem "rails_config"
+gem "net-ldap"
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

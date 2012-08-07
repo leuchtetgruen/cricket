@@ -5,7 +5,7 @@
       <%= f.text_field :name, :class => 'text_field' %>
     </div>
   </div>
-	<% if @user.salt.empty? %>
+	<% if @user.not_initialized? then %>
   <div class="control-group">
     <%= f.label :password, :class => 'control-label' %>
     <div class="controls">

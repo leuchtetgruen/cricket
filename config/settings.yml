@@ -1,0 +1,4 @@
+user:
+    use_ldap: false
+    server: "xxx.xxx.xxx.xxx"
+    domain_prefix: 'DOMAIN\'
