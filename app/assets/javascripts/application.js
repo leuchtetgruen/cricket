@@ -17,4 +17,7 @@
 
 $(document).ready(function() {
 	$('.dropdown-toggle').dropdown();
+	$('#loginModal').on('shown', function() {
+		$('#name').focus();
+	});
 });

@@ -11,7 +11,7 @@
 		
 				<div class="control-group">
 				<%= f.label :type, "Change type to", :class => "control-label" %>
-				<%= f.select(:type, options_for_select(Issue::TYPES, @issue.type)) %>
+				<%= f.select(:type, options_for_select(@issue.applicable_types, @issue.type)) %>
 				</div>
 
 				<%= f.submit "Save", :class => 'btn btn-primary' %>			
@@ -35,7 +35,7 @@
 </div>
 
 <blockquote>
-	<p><%= @issue.description %></p>
+	<p><%= md @issue.description %></p>
 	<small>
 	<% if logged_in? then %>
 		<%= mail_to @issue.reporter_email, @issue.reporter_name, :subject => "Regarding your report : #{@issue.title}"%>
@@ -46,56 +46,85 @@
 </blockquote>
 
 
-<dl class="dl-horizontal">
-  <dt><strong><%= model_class.human_attribute_name(:type) %>:</strong></dt>
-  <dd><%= @issue.human_readable_type %></dd>
-  <dt><strong>Assigned to:</strong></dt>
-  <dd><%= @issue.user or "Not assigned yet" %></dd>
-  <dt><strong><%= model_class.human_attribute_name(:software_id) %>:</strong></dt>
-  <dd><%= @issue.software %></dd>
-	<dt><strong>Created at</strong></dt>
-	<dd><%=l @issue.created_at %></dd>
-</dl>
-
-<% if !@issue.messages.empty? then %>
-	<div id="messages">
-	<h2>Protocol</h2>
-	<table class="table table-striped">
-	  <thead>
-	    <tr>
-	      <th>What happened?</th>		
-	      <th>Who did it?</th>	
-				<th>Timestamp</th>
-	    </tr>
-	  </thead>
-		<tbody>
-			<% @issue.messages.reverse.each do |message| %>
-				<tr>
-					<td><%= message.text %></td>			
-					<td><%= message.user %></td>							
-					<td><%=l message.created_at %></td>
-
-				</tr>
-			<% end %>
-		</tbody>
-	</table>
+<div class="row-fluid">
+	<div class="span6">
+		<h3>Details<hr/></h3>
+		<dl class="dl-horizontal">
+		  <dt><strong><%= model_class.human_attribute_name(:type) %>:</strong></dt>
+		  <dd><%= @issue.human_readable_type %></dd>
+		  <dt><strong>Assigned to:</strong></dt>
+		  <dd><%= @issue.user or "Not assigned yet" %></dd>
+		  <dt><strong><%= model_class.human_attribute_name(:software_id) %>:</strong></dt>
+		  <dd><%= @issue.software %></dd>
+			<dt><strong>Created at</strong></dt>
+			<dd><%=l @issue.created_at, :format => :long %></dd>
+			<dt><strong>Status</strong></dt>
+			<dd>
+				<% if @issue.resolved? then %>
+					<span class="label label-success">Resolved</span>
+				<% else %>
+					<span class="label label-important">Unresolved</span>
+				<% end %>
+			</dd>
+		</dl>
 	</div>
-<% end %>
+	
+	<div class="span6">
+		<% if !@issue.messages.empty? then %>
+			<div id="messages">
+			<h3>Protocol<hr/></h3>
+			<table class="table table-striped">
+			  <thead>
+			    <tr>
+			      <th>Message</th>		
+			      <th>Author</th>	
+						<th>Timestamp</th>
+			    </tr>
+			  </thead>
+				<tbody>
+					<% @issue.messages.reverse.each do |message| %>
+						<tr>
+							<td><%= md message.text %></td>			
+							<td><%= message.user %></td>							
+							<td><%=l message.created_at, :format => :short %></td>
+
+						</tr>
+					<% end %>
+				</tbody>
+			</table>
+			</div>
+		<% end %>
+	</div>
+
+</div>
 
 <% if logged_in? then %>
-	<div class="form-actions">
-		<% if @issue.resolved? then %>
-			<%= form_tag reopen_issue_path do %>
-				<%= text_area_tag :text, '', :placeholder => 'Describe why you reopened the issue' %>
+	<div class="row-fluid">
+		<div class="span6">
+			<h3>Leave a message<hr/></h3>
+			<%= form_tag leave_message_issue_path do %>
+				<%= text_area_tag :text, '', :placeholder => 'Leave a message after the beep', :class => 'widebox' %>
 				<br/>
-				<%= submit_tag "Reopen", :class => "btn btn-danger" %>
+				<%= submit_tag "Leave a message", :class => "btn" %>
 			<% end %>
-		<% else %>
-			<%= form_tag resolve_issue_path do %>
-				<%= text_area_tag :text, '', :placeholder => 'Describe how you resolved the issue' %>
-				<br/>
-				<%= submit_tag "Resolve", :class => "btn btn-success" %>
+		</div>
+		<div class="span6">
+			<!-- Resolve / reopen -->
+			<% if @issue.resolved? then %>
+				<h3>Reopen<hr/></h3>			
+				<%= form_tag reopen_issue_path do %>
+					<%= text_area_tag :text, '', :placeholder => 'Describe why you reopened the issue', :class => 'widebox' %>
+					<br/>
+					<%= submit_tag "Reopen", :class => "btn btn-danger" %>
+				<% end %>
+			<% else %>
+				<h3>Resolve<hr/></h3>						
+				<%= form_tag resolve_issue_path do %>
+					<%= text_area_tag :text, '', :placeholder => 'Describe how you resolved the issue', :class => 'widebox' %>
+					<br/>
+					<%= submit_tag "Resolve", :class => "btn btn-success" %>
+				<% end %>
 			<% end %>
-		<% end %>
+		</div>
 	</div>
 <% end %>

@@ -44,7 +44,7 @@
 											<li><%= link_to "Not assigned", issues_path(:unassigned => true)%>												
 										<% end %>
 										<li class="divider"></li>
-							      <li><%= link_to "All issues", issues_path %></li>										
+							      <li><%= link_to "All issues", issues_reset_filter_path %></li>										
 							    </ul>
 							  </li>
 								
@@ -55,14 +55,14 @@
 	
 							<ul class="nav pull-right">
 								<li>
+									<%= yield :right_menu_content %>
 									<% if logged_in? then %>
 										<% if me.normal? then %>
 											<li><%= link_to "My account", account_path %></li>
 										<% end %>
 										<li><%= link_to "Logout", logout_path %></li>
 									<% else %>
-									  <%= link_to "Login", '#myModal', "data-toggle" => "modal"  %>									
-									  <!-- <%= link_to "Login", login_path %> -->
+									  <li><%= link_to "Login", '#loginModal', "data-toggle" => "modal"  %></li>
 									<% end %>
 								</li>
 							</ul>
@@ -74,16 +74,16 @@
 
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span2">
+		<div class="span3">
 			<%= yield :sidebar %>
 		</div>
-		<div class="span10">
+		<div class="span9">
 				<%= yield %>
 		</div>
 	</div>
 </div>
 
-<div class="modal hide" id="myModal">
+<div class="modal hide" id="loginModal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">×</button>
     <h3>Login</h3>

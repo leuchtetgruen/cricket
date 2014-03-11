@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   end
   
   def normal?
-    type == TYPE_NORMAL or !Settings.user.use_ldap
+    (self.type == TYPE_NORMAL) or !Settings.user.use_ldap
   end
   
   def ldap?

@@ -1,3 +1,4 @@
+require "rdiscount"
 module ApplicationHelper
   
   def logged_in?
@@ -14,6 +15,10 @@ module ApplicationHelper
   
   def icon(name)
     raw("<i class='icon-" + name + "'></i>")
+  end
+  
+  def md(string)
+    RDiscount.new(string).to_html.html_safe
   end
   
   def flash_messages

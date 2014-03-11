@@ -1,28 +1,35 @@
 <%- model_class = Issue -%>
-<% content_for :sidebar do %>
-	<form method="get" class="well">
-		<h3>Filter</h3>
-		<hr/>
-		<!-- <%= label :title, "Title" %>
-		<%= text_field_tag :title %> -->
-		<%= label :software, "Product" %>
-		<%= select_tag(:software, options_for_select(@softwares, currently_selected(:software)), :include_blank => true)%>
-		<%= label :type, "Type" %>
-		<%= select_tag(:type, options_for_select(Issue::TYPES, currently_selected(:type)), :include_blank => true) %>
-		<div class="control-group">
-		<%= label :user, "Assigned to" %>
-		<%= select_tag(:user, options_for_select(@users, currently_selected(:user)), :include_blank => true) %>
-		<%= check_box_tag(:unassigned, 'yes', (currently_selected?(:unassigned)))%> Unassigned
-		</div>
-		<%= label :resolved, "Status"%>
-		<%= select_tag(:status, options_for_select(["resolved", "unresolved"], currently_selected(:status)), :include_blank => true)%>
+<div class="modal hide" id="filterModal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>Filter</h3>
+  </div>	
+	<div class="modal-body">
+		<form method="get">
+			<!-- <%= label :title, "Title" %>
+			<%= text_field_tag :title %> -->
+			<%= label :software, "Product" %>
+			<%= select_tag(:software, options_for_select(@softwares, currently_selected(:software)), :include_blank => true)%>
+			<%= label :type, "Type" %>
+			<%= select_tag(:type, options_for_select(Issue::TYPES, currently_selected(:type)), :include_blank => true) %>
+			<div class="control-group">
+			<%= label :user, "Assigned to" %>
+			<%= select_tag(:user, options_for_select(@users, currently_selected(:user)), :include_blank => true) %>
+			<%= check_box_tag(:unassigned, 'yes', (currently_selected?(:unassigned)))%> Unassigned
+			</div>
+			<%= label :resolved, "Status"%>
+			<%= select_tag(:status, options_for_select(["resolved", "unresolved"], currently_selected(:status)), :include_blank => true)%>
 		
+			<br/>
+	    <%= submit_tag "Filter", :class => 'btn btn-primary' %>
+			<%= link_to "Reset", issues_reset_filter_path, :class => 'btn btn-danger'%>
 
-    <%= submit_tag "Filter", :class => 'btn btn-primary' %>
-		<%= link_to "Reset", issues_reset_filter_path, :class => 'btn btn-danger'%>
 
-
-	</form>
+		</form>
+	</div>
+</div>
+<% content_for :right_menu_content do %>
+		<li><%= link_to "Filter", '#filterModal', "data-toggle" => "modal"  %></li>
 <% end %>
 
 <div class="page-header">
@@ -68,8 +75,7 @@
 <% else %>
 	<div class="alert">
 	  <button class="close" data-dismiss="alert">×</button>
-	  <strong>No issues</strong> There are no issues matching your filters. You might want to narrow your filters in the left bar or<br/>
-		hit the reset button to remove all filters. You can also report a new issue.
+	  <strong>No issues</strong> There are no issues matching your filters. You might want to change your filters in the filter menu,<br/> reachable using the button in the upper right corner of the webpage. You can also report a new issue.
 	</div>
 <% end %>
 

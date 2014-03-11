@@ -1,5 +1,5 @@
 class IssuesController < ApplicationController
-  before_filter :authorize, :except => [:new, :create, :index, :show]
+  before_filter :authorize, :except => [:new, :create, :index, :show, :reset_filter]
 
   
   # GET /issues
@@ -45,6 +45,9 @@ class IssuesController < ApplicationController
       @issue.software_id    = params[:software]
       @issue.software       = Software.find(@issue.software_id)
     end
+    
+    @issue.reporter_email = session[:reporter_email] if session[:reporter_email]
+    @issue.reporter_name  = session[:reporter_name] if session[:reporter_name]
 
     respond_to do |format|
       format.html # new.html.erb
@@ -62,8 +65,11 @@ class IssuesController < ApplicationController
   def create
     @issue = Issue.new(params[:issue])
 
+    session[:reporter_name] = @issue.reporter_name if @issue.reporter_name
+    session[:reporter_email] = @issue.reporter_email if @issue.reporter_email
+
     respond_to do |format|
-      if (current_user or verify_recaptcha(:model => @issue, :message => 'Please reenter the captcha')) && @issue.save
+      if (current_user or !Settings.captcha.use_captcha or verify_recaptcha(:model => @issue, :message => 'Please reenter the captcha')) && @issue.save
         format.html { redirect_to issues_path, notice: 'Issue was successfully reported.' }
         format.json { render json: @issue, status: :created, location: @issue }
       else
@@ -129,6 +135,16 @@ class IssuesController < ApplicationController
     
     respond_to do |format|
       format.html { redirect_to issues_url, notice: 'The issue has been reopened.' }
+      format.json { head :no_content }
+    end
+  end
+  
+  def leave_message
+    @issue = Issue.find(params[:id])
+    
+    Message.create(:user => current_user, :issue => @issue, :text => params[:text])
+    respond_to do |format|
+      format.html { redirect_to issues_url, notice: 'Your message was added to the log.'}
       format.json { head :no_content }
     end
   end

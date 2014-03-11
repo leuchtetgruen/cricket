@@ -2,3 +2,7 @@ user:
     use_ldap: false
     server: "xxx.xxx.xxx.xxx"
     domain_prefix: 'DOMAIN\'
+captcha:
+    use_captcha: false
+    public_key: ''  # recaptcha public key
+    private_key: '' # recaptcha private key

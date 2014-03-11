@@ -19,6 +19,7 @@ Cricket::Application.routes.draw do
     member do
       post 'resolve'
       post 'reopen'
+      post 'leave_message'
     end
   end
 

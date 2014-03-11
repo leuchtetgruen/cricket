@@ -10,12 +10,27 @@ class Issue < ActiveRecord::Base
 
   set_inheritance_column :inhet_type
   
-  TYPES = [['Bug', 1], 
-           ['Request', 2],
-           ['Enhancement', 3],
-           ['Duplicate', 4],
-           ['Cant reproduce', 5]]
+  TYPES = [['Bug', 1, true], 
+           ['Request', 2, true],
+           ['Enhancement', 3, true],
+           ['Duplicate', 4, false],
+           ['Cant reproduce', 5, false]]
   
+  
+  def applicable_types
+    # show only certain types when reporting a new issue
+    if self.id then
+      TYPES.map do |type|
+        type[0..1]
+      end
+    else
+      TYPES.select do |type|
+        type[2]
+      end.map do |type|
+        type[0..1]
+      end
+    end
+  end
   
   def self.type_named(name)
     TYPES.select { |t| t[0]==name }.flatten[1]
